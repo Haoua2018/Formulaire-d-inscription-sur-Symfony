@@ -1,0 +1,194 @@
+//création du projet
+
+symfony new Dalitest --full --version=2.6
+
+//positionnement sur le projet
+cd Dalitest
+
+//démarrage du  serveur
+symfony serve start
+
+//Création du nom de domaine
+symfony  proxy start 
+
+symfony  proxy:domain:attach Dalitest
+
+//création du contrôleur et installation des dépendances
+composer require doctrine/annotations
+composer require symfony/maker-bundle --dev
+composer require symfony/form
+composer require symfony/twig-bundle
+
+// InscriptionController gère les actions d'inscription
+symfony console make:controller Inscription
+
+//le fichier InscriptionController.php est créé 
+
+//Contenu du fichier 
+
+namespace App\Controller;
+
+use AppBundle\Entity\Post;
+use AppBundle\Form\PostType;
+use AppBundle\Utils\Slugger;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\Request;
+
+class BlogController extends Controller
+{
+
+//fonction accueil
+  public function indexAction()
+    {
+        
+
+        return $this->render('Inscription/index.html.twig', ['controllername' => InscriptionController]);
+    }
+	
+//fonction de gestion des champs du formulaire
+
+	public function new(Request $request)
+    {
+        // creates a task object and initializes some data for this example
+        $utilisateur = new Utilisateur();
+       
+	   //$utilisateur->setTask('Authentication session');
+        //$utilisateur->setDueDate(new \DateTime('tomorrow'));
+
+        $form = $this->createFormBuilder($task)
+            ->add('Nom', TextType::class)
+            ->add('Prenom', TextType::class)
+			->add('Email', EmailType ::class)
+            ->add('save', SubmitType::class, ['label' => 'Utilisateur créé'])
+            ->getForm();
+
+ 
+//formulaire
+        return $this->render('Utilisateur/new.html.twig', [
+            'form' => $form->createView(),
+        
+    }
+	}
+	
+//Contenu du fichier template Twig : index.html.twig
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+<form method="post">
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+
+    <h1 class="h3 mb-3 font-weight-normal">Inscription</h1>
+	<label for="nom">Nom</label>
+    <input type="text"  name="nom" id="nom" class="form-control" required autofocus>
+    <label for="inputprenom">Prénom</label>
+    <input type="text"  name="prenom" id="inputprenom" class="form-control" required autofocus>
+
+    <label for="inputEmail">Email</label>
+    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" required autofocus>
+    <label for="inputPassword">Mot de passe</label>
+    <input type="password" name="password" id="inputPassword" class="form-control" required>
+
+    <input type="hidden" name="_csrf_token"
+           value="{{ csrf_token('authenticate') }}"
+    >
+
+    
+    <button class="btn btn-lg btn-primary" type="submit">
+        Sign in
+    </button>
+</form>
+{% endblock %}
+
+
+//Contenu du fichier template Twig : new.html.twig
+{# templates/Utilisateur/new.html.twig #}
+{{ form(form) }}
+
+
+
+//Contenu du fichier Entité : Utilisateur.php
+
+	// src/Entity/Utilisateur.php
+namespace App\Entity;
+
+class Utilisateur
+{
+    protected $Nom;
+    protected $Prenom;
+	protected $Email;
+
+    public function getNom()
+    {
+        return $this->Nom;
+    }
+
+    public function setNom($nomutilisateur)
+    {
+        $this->Nom = $nomutilisateur;
+    }
+
+    public function getPrenom()
+    {
+        return $this->Prenom;
+    }
+	
+	 public function setPrenom($prenomutilisateur)
+    {
+        $this->Nom = $prenomutilisateur;
+    }
+	
+	public function getMail()
+    {
+        return $this->Email;
+    }
+	
+     public function setMail($mailutilisateur)
+    {
+        $this->Email = $mailutilisateur;
+    }
+
+
+   }
+
+	//Contenu du router.yml
+	home:
+	path: /
+	controller: App\Controller\InscriptionController::indexAction
+	
+	Inscription:
+	path: /authentification/
+	controller: App\Controller\InscriptionController::new
+	
+	//la base de donnée
+	
+	/création de la table utilisateur
+	
+	create table utilisateur (
+	Id int;
+	nom varchar(100);
+	prenom varchar (100);
+	email varchar (250) ;
+	) ;
+	
+	//on insert les valeurs $nomutilisateur , $prenomutilisateur , $email
+	
+	insert into utilisateur values ('.$nomutilisateur.',')
+	
+	
+
+	
